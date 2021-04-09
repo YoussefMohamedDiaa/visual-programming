@@ -1,0 +1,20 @@
+{
+  "name": "visual-programming",
+  "version": "1.0.0",
+  "description": "Visual Programming Exploratoin",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YoussefMohamedDiaa/visual-programming.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YoussefMohamedDiaa/visual-programming/issues"
+  },
+  "homepage": "https://github.com/YoussefMohamedDiaa/visual-programming#readme"
+}
