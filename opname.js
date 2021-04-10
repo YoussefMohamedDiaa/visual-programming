@@ -8,7 +8,7 @@ let blocks = {}
 if(targets.length > 0)
     blocks = targets[0].blocks
 
-console.log(getName('GY0|]+]3o~kDK|*eQMS3',blocks))
+//console.log(getName('/WHsUG9WJbjGA)7mw}Vf',blocks))
 
 function getName(blockId, blocks) {
     const block = blocks[blockId]
@@ -44,8 +44,21 @@ function getName(blockId, blocks) {
             return 'When ' + block.fields.KEY_OPTION[0] + ' pressed'
         case 'control_forever':
             return 'Forever ' + getName(block.inputs.SUBSTACK[1],blocks)
-        //if
         case 'control_if':
-            
+            return 'If (' + getName(block.inputs.CONDITION[1],blocks)+') Then: '+getName(block.inputs.SUBSTACK[1],blocks)
+        case 'control_if_else':
+            return 'If (' + getName(block.inputs.CONDITION[1],blocks)
+                    +') Then: '+getName(block.inputs.SUBSTACK[1],blocks)
+                    +' Else: '+ getName(block.inputs.SUBSTACK2[1],blocks)
+        case 'control_repeat':
+            return 'Repeat ('+ getName(block.inputs.SUBSTACK[1],blocks) +') '+ block.inputs.TIMES[1][1] +' Times'
+        case 'control_wait':
+            return 'Wait '+ block.inputs.DURATION[1][1]+ ' seconds'
+        case 'control_wait_until':
+            return 'Wait until '+ getName(block.inputs.CONDITION[1],blocks)
+        case 'operator_gt':
+            return block.inputs.OPERAND1[1][1]+'>'+block.inputs.OPERAND2[1][1]
+        case 'control_repeat_until':
+            return 'Repeat ('+ getName(block.inputs.SUBSTACK[1],blocks) +') until '+getName(block.inputs.CONDITION[1],blocks)
       }
 }
