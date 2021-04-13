@@ -221,7 +221,7 @@ function convertBlocksToPseudoCode(blocks) {
 
 function main() {
     const blocks = parseScratchProject(
-        "./scratch-projects/nested-controls/projectTest5.json"
+        "./scratch-projects/nested-controls/project.json"
     );
 
     const pseudoCode = convertBlocksToPseudoCode(blocks);
