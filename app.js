@@ -80,9 +80,10 @@ function convertBlockCommand(blockId, blocks) {
     case "control_if":
       return (
         "If (" +
-        convertBlockCommand(block.inputs.CONDITION[1], blocks) +
-        ") Then: " +
-        convertBlockCommand(block.inputs.SUBSTACK[1], blocks)
+        convertBlockCommand(block.inputs.CONDITION[1], blocks) +')'
+        // +
+        // ") Then: " +
+        // convertBlockCommand(block.inputs.SUBSTACK[1], blocks)
       );
     case "control_if_else":
       return (
@@ -115,15 +116,15 @@ function convertBlockCommand(blockId, blocks) {
       return block.inputs.OPERAND1[1][1] + "=" + block.inputs.OPERAND2[1][1];
     case "operator_and":
       return (
-        convertBlockCommand(block.inputs.OPERAND1[1], blocks) +
-        " AND " +
-        convertBlockCommand(block.inputs.OPERAND2[1], blocks)
+        '('+convertBlockCommand(block.inputs.OPERAND1[1], blocks) +
+        ") AND (" +
+        convertBlockCommand(block.inputs.OPERAND2[1], blocks)+')'
       );
     case "operator_or":
       return (
-        convertBlockCommand(block.inputs.OPERAND1[1], blocks) +
-        " OR " +
-        convertBlockCommand(block.inputs.OPERAND2[1], blocks)
+        '('+convertBlockCommand(block.inputs.OPERAND1[1], blocks) +
+        ") OR (" +
+        convertBlockCommand(block.inputs.OPERAND2[1], blocks)+')'
       );
     case "operator_not":
       return (
@@ -221,7 +222,7 @@ function convertBlocksToPseudoCode(blocks) {
 
 function main() {
     const blocks = parseScratchProject(
-        "./scratch-projects/nested-controls/project.json"
+        "./scratch-projects/nested-controls/ifTest.json"
     );
 
     const pseudoCode = convertBlocksToPseudoCode(blocks);
