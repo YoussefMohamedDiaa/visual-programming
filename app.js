@@ -115,18 +115,20 @@ function convertBlockCommand(blockId, blocks) {
       return block.inputs.OPERAND1[1][1] + "=" + block.inputs.OPERAND2[1][1];
     case "operator_and":
       return (
-        convertBlockCommand(block.inputs.OPERAND1[1]) +
+        convertBlockCommand(block.inputs.OPERAND1[1], blocks) +
         " AND " +
-        convertBlockCommand(block.inputs.OPERAND2[1])
+        convertBlockCommand(block.inputs.OPERAND2[1], blocks)
       );
     case "operator_or":
       return (
-        convertBlockCommand(block.inputs.OPERAND1[1]) +
+        convertBlockCommand(block.inputs.OPERAND1[1], blocks) +
         " OR " +
-        convertBlockCommand(block.inputs.OPERAND2[1])
+        convertBlockCommand(block.inputs.OPERAND2[1], blocks)
       );
     case "operator_not":
-      return "NOT(" + convertBlockCommand(block.inputs.OPERAND[1]) + ")";
+      return (
+        "NOT(" + convertBlockCommand(block.inputs.OPERAND[1], blocks) + ")"
+      );
     case "control_repeat_until":
       return (
         "Repeat (" +
@@ -219,7 +221,7 @@ function convertBlocksToPseudoCode(blocks) {
 
 function main() {
     const blocks = parseScratchProject(
-        "./scratch-projects/nested-controls/project.json"
+        "./scratch-projects/nested-controls/projectTest5.json"
     );
 
     const pseudoCode = convertBlocksToPseudoCode(blocks);
