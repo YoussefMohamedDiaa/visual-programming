@@ -115,18 +115,18 @@ function convertBlockCommand(blockId, blocks) {
       return block.inputs.OPERAND1[1][1] + "=" + block.inputs.OPERAND2[1][1];
     case "operator_and":
       return (
-        getName(block.inputs.OPERAND1[1]) +
+        convertBlockCommand(block.inputs.OPERAND1[1]) +
         " AND " +
-        getName(block.inputs.OPERAND2[1])
+        convertBlockCommand(block.inputs.OPERAND2[1])
       );
     case "operator_or":
       return (
-        getName(block.inputs.OPERAND1[1]) +
+        convertBlockCommand(block.inputs.OPERAND1[1]) +
         " OR " +
-        getName(block.inputs.OPERAND2[1])
+        convertBlockCommand(block.inputs.OPERAND2[1])
       );
     case "operator_not":
-      return "NOT(" + getName(block.inputs.OPERAND[1]) + ")";
+      return "NOT(" + convertBlockCommand(block.inputs.OPERAND[1]) + ")";
     case "control_repeat_until":
       return (
         "Repeat (" +
