@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const rawData = fs.readFileSync('projectTest2.json');
+const rawData = fs.readFileSync('projectTest4.json');
 const scratchProject = JSON.parse(rawData);
 
 const targets = scratchProject.targets.filter(target => Object.keys(target.blocks).length > 0)
@@ -8,7 +8,8 @@ let blocks = {}
 if(targets.length > 0)
     blocks = targets[0].blocks
 
-//console.log(getName('/WHsUG9WJbjGA)7mw}Vf',blocks))
+//console.log(blocks)
+console.log(getName('HUwpKm@7Z;q5|X+^MS[v',blocks))
 
 function getName(blockId, blocks) {
     const block = blocks[blockId]
@@ -56,8 +57,19 @@ function getName(blockId, blocks) {
             return 'Wait '+ block.inputs.DURATION[1][1]+ ' seconds'
         case 'control_wait_until':
             return 'Wait until '+ getName(block.inputs.CONDITION[1],blocks)
+        
         case 'operator_gt':
             return block.inputs.OPERAND1[1][1]+'>'+block.inputs.OPERAND2[1][1]
+        case 'operator_lt':
+            return block.inputs.OPERAND1[1][1]+'<'+block.inputs.OPERAND2[1][1]
+        case 'operator_equals':
+            return block.inputs.OPERAND1[1][1]+'='+block.inputs.OPERAND2[1][1]
+        case 'operator_and':
+            return getName(block.inputs.OPERAND1[1]) + ' AND ' + getName(block.inputs.OPERAND2[1])
+        case 'operator_or':
+            return getName(block.inputs.OPERAND1[1]) + ' OR ' + getName(block.inputs.OPERAND2[1])
+        case 'operator_not':
+            return 'NOT('+ getName(block.inputs.OPERAND[1])+')'
         case 'control_repeat_until':
             return 'Repeat ('+ getName(block.inputs.SUBSTACK[1],blocks) +') until '+getName(block.inputs.CONDITION[1],blocks)
       }
