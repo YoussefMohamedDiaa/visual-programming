@@ -13,7 +13,7 @@ npm install
 ```
 
 ## Run the program
-```node
+```
 npm start <pathToScratchProjectJSON>
 ```
 
@@ -24,7 +24,7 @@ The following are sample projects, that can be found under the `./scratch-projec
 ### Sample Scratch Program
 
 To generate the textual representation of the sample scratch program, run the following command:
-```node
+```
 npm start ./scratch-projects/sample-program-1.json
 ```
 
