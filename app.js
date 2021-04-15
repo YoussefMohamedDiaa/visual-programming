@@ -17,6 +17,10 @@ function isControlBlock(block) {
     return block.opcode.startsWith("control");
 }
 
+function isIfElseBlock(block) {
+    return block.opcode === "control_if_else";
+}
+
 function isEventBlock(block) {
     return block.opcode.startsWith("event");
 }
@@ -31,20 +35,12 @@ function createIndentation(indentLevel) {
     return indentation;
 }
 
-// function convertBlockCommand(blockId, blocks) {
-//     if (isControlBlock(blocks[blockId])) {
-//         if (isWaitBlock(blocks[blockId])) return "WAIT";
-//         return "CONTROL";
-//     }
-//     return "COMMAND";
-// }
-
 function convertBlockCommand(blockId, blocks) {
     const block = blocks[blockId];
 
     switch (block.opcode) {
         case "event_whenflagclicked":
-            return "When Green Flage Clicked";
+            return "WHEN Green Flag CLICKED";
         case "motion_movesteps":
             return "Move " + block.inputs.STEPS[1][1] + " Steps";
         case "motion_turnright":
@@ -80,43 +76,37 @@ function convertBlockCommand(blockId, blocks) {
                 block.inputs.SECS[1][1]
             );
         case "event_whenkeypressed":
-            return "When " + block.fields.KEY_OPTION[0] + " pressed";
+            return "WHEN " + block.fields.KEY_OPTION[0] + " PRESSED";
         case "control_forever":
             return (
-                "Forever " +
+                "FOREVER " +
                 convertBlockCommand(block.inputs.SUBSTACK[1], blocks)
             );
         case "control_if":
             return (
-                "If (" +
+                "IF (" +
                 convertBlockCommand(block.inputs.CONDITION[1], blocks) +
                 ")"
-                // +
-                // ") Then: " +
-                // convertBlockCommand(block.inputs.SUBSTACK[1], blocks)
             );
         case "control_if_else":
             return (
-                "If (" +
+                "IF (" +
                 convertBlockCommand(block.inputs.CONDITION[1], blocks) +
-                ") Then: " +
-                convertBlockCommand(block.inputs.SUBSTACK[1], blocks) +
-                " Else: " +
-                convertBlockCommand(block.inputs.SUBSTACK2[1], blocks)
+                ")"
             );
         case "control_repeat":
             return (
-                "Repeat (" +
+                "REPEAT (" +
                 convertBlockCommand(block.inputs.SUBSTACK[1], blocks) +
                 ") " +
                 block.inputs.TIMES[1][1] +
-                " Times"
+                " TIMES"
             );
         case "control_wait":
-            return "Wait " + block.inputs.DURATION[1][1] + " seconds";
+            return "WAIT " + block.inputs.DURATION[1][1] + " seconds";
         case "control_wait_until":
             return (
-                "Wait until " +
+                "WAIT UNTIL " +
                 convertBlockCommand(block.inputs.CONDITION[1], blocks)
             );
         case "operator_gt":
@@ -155,9 +145,9 @@ function convertBlockCommand(blockId, blocks) {
             );
         case "control_repeat_until":
             return (
-                "Repeat (" +
+                "REPEAT (" +
                 convertBlockCommand(block.inputs.SUBSTACK[1], blocks) +
-                ") until " +
+                ") UNTIL " +
                 convertBlockCommand(block.inputs.CONDITION[1], blocks)
             );
     }
@@ -205,8 +195,8 @@ function convertBlocksSubtree(currentBlockId, pseudoCode, indentLevel, blocks) {
         isControlBlock(blocks[currentBlockId]) &&
         !isWaitBlock(blocks[currentBlockId])
     ) {
-        const blockInSubStackId = getBlockInSubStackId(blocks[currentBlockId]);
-        const topOfSubStackId = getTopOfSubStackId(
+        let blockInSubStackId = getBlockInSubStackId(blocks[currentBlockId]);
+        let topOfSubStackId = getTopOfSubStackId(
             blockInSubStackId,
             currentBlockId,
             blocks
@@ -220,6 +210,27 @@ function convertBlocksSubtree(currentBlockId, pseudoCode, indentLevel, blocks) {
             blocks
         );
         addEndCommandToPseudoCode(pseudoCode, indentLevel + 2);
+
+        if (isIfElseBlock(blocks[currentBlockId])) {
+            const indentation = createIndentation(indentLevel);
+            pseudoCode.code += indentation + "ELSE" + "\n";
+
+            blockInSubStackId = blocks[currentBlockId].inputs.SUBSTACK2[1];
+            topOfSubStackId = getTopOfSubStackId(
+                blockInSubStackId,
+                currentBlockId,
+                blocks
+            );
+
+            addBeginCommandToPseudoCode(pseudoCode, indentLevel + 2);
+            convertBlocksSubtree(
+                topOfSubStackId,
+                pseudoCode,
+                indentLevel + 4,
+                blocks
+            );
+            addEndCommandToPseudoCode(pseudoCode, indentLevel + 2);
+        }
 
         convertBlocksSubtree(nextBlock, pseudoCode, indentLevel, blocks);
     } else if (isEventBlock(blocks[currentBlockId])) {
@@ -245,7 +256,7 @@ function convertBlocksToPseudoCode(blocks) {
 
 function main() {
     const blocks = parseScratchProject(
-        "./scratch-projects/nested-controls/ifTest.json"
+        "./scratch-projects/nested-controls/ifThenElseTest.json"
     );
 
     const pseudoCode = convertBlocksToPseudoCode(blocks);
