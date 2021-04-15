@@ -12,20 +12,26 @@ A NodeJS program that transforms a [Scratch](https://scratch.mit.edu/) visual pr
 npm install
 ```
 
-## Run the program
+## Running the program
 ```
 npm start <pathToScratchProjectJSON>
 ```
+The transformed pseudo code will be displayed in the console.
 
+### Writing the pseudo code to file
+To write the pseudo code to a file, an optional file path can be passed as a command line argument.
+```
+npm start <pathToScratchProjectJSON> <optionalOutputPath>
+```
 ## Examples
 
 The following are sample projects, that can be found under the `./scratch-projects` directory.
 
 ### Sample Scratch Program
 
-To generate the textual representation of the sample scratch program, run the following command:
+To generate the textual representation of the sample scratch program, change the directory to the root of this project then run the following command:
 ```
-npm start ./scratch-projects/sample-program-1.json
+npm start ./scratch-projects/sample-program.json
 ```
 
 #### Scratch Program

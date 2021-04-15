@@ -13,6 +13,10 @@ function parseScratchProject(path) {
     return blocks;
 }
 
+function writePseudoCodeToFile(pseudoCode, path) {
+  fs.writeFileSync(path, pseudoCode);
+}
+
 function isControlBlock(block) {
     return block.opcode.startsWith("control");
 }
@@ -254,6 +258,9 @@ function main() {
     const pseudoCode = convertBlocksToPseudoCode(blocks);
 
     console.log(pseudoCode);
+
+    if(process.argv.length > 3)
+      writePseudoCodeToFile(pseudoCode, process.argv[3])
 }
 
 main();
