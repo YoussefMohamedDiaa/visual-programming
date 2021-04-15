@@ -63,7 +63,7 @@ function convertBlockCommand(blockId, blocks) {
             return (
                 "Say " +
                 block.inputs.MESSAGE[1][1] +
-                "For " +
+                " For " +
                 block.inputs.SECS[1][1]
             );
         case "looks_think":
@@ -78,10 +78,7 @@ function convertBlockCommand(blockId, blocks) {
         case "event_whenkeypressed":
             return "WHEN " + block.fields.KEY_OPTION[0] + " PRESSED";
         case "control_forever":
-            return (
-                "FOREVER " +
-                convertBlockCommand(block.inputs.SUBSTACK[1], blocks)
-            );
+            return "FOREVER";
         case "control_if":
             return (
                 "IF (" +
@@ -96,9 +93,7 @@ function convertBlockCommand(blockId, blocks) {
             );
         case "control_repeat":
             return (
-                "REPEAT (" +
-                convertBlockCommand(block.inputs.SUBSTACK[1], blocks) +
-                ") " +
+                "REPEAT "+
                 block.inputs.TIMES[1][1] +
                 " TIMES"
             );
@@ -145,9 +140,7 @@ function convertBlockCommand(blockId, blocks) {
             );
         case "control_repeat_until":
             return (
-                "REPEAT (" +
-                convertBlockCommand(block.inputs.SUBSTACK[1], blocks) +
-                ") UNTIL " +
+                "REPEAT UNTIL " +
                 convertBlockCommand(block.inputs.CONDITION[1], blocks)
             );
     }
@@ -255,9 +248,8 @@ function convertBlocksToPseudoCode(blocks) {
 }
 
 function main() {
-    const blocks = parseScratchProject(
-        "./scratch-projects/nested-controls/ifThenElseTest.json"
-    );
+    const scratchProjectPath = process.argv[2];
+    const blocks = parseScratchProject(scratchProjectPath);
 
     const pseudoCode = convertBlocksToPseudoCode(blocks);
 
