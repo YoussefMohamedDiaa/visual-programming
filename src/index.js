@@ -62,6 +62,7 @@ function onReaderLoad(event) {
     const plainTextData = event.target.result
     const code = parseScratchProject(plainTextData)
     updateEventCode(code)
+    console.log(code)
 }
 
 function alertJSONUploadSuccess() {
@@ -90,9 +91,24 @@ resize()
 // Dialog Controller
 
 const dialogController = {
-    say: function (text) {},
-    think: function (text) {},
-    clear: function () {}
+    _editDialogText: function (verb, text) {
+        const dialogElement = document.getElementById('dialog')
+        dialogElement.innerHTML = `
+        <div id="dialogCard" class="card">
+            <div id="dialogContent" class="card-body">
+                <strong>Scratch ${verb}: </strong>${text}
+            </div>
+        </div>`
+    },
+    say: function (text) {
+        this._editDialogText('saying', text)
+    },
+    think: function (text) {
+        this._editDialogText('thinking', text)
+    },
+    clear: function () {
+        document.getElementById('dialog').innerHTML = ''
+    }
 }
 
 let eventCode = {}
@@ -145,7 +161,6 @@ function initListeners() {
     }
 
     document.addEventListener('keydown', ({ key }) => {
-        if (eventCode[key])
-            execute(eventCode[key], catSprite, dialogController)
+        if (eventCode[key]) execute(eventCode[key], catSprite, dialogController)
     })
 }

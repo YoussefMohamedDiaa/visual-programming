@@ -45,6 +45,8 @@
 
         <div id="canvas"></div>
 
+        <div id="dialog"></div>
+
         <style>
             #controlPanel {
                 position: absolute;
@@ -64,6 +66,20 @@
             #canvas {
                 width: 100vw;
                 height: 100vh;
+            }
+            #dialog {
+                position: absolute;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                bottom: 0px;
+                width: 100vw;
+                height: 15vh;
+                padding: 8px;
+                background-color: rgba(0, 0, 0, 0);
+            }
+            #dialogCard {
+                width: 50%;
             }
             body {
                 margin: 0;
