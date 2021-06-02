@@ -1,7 +1,4 @@
-const fs = require('fs')
-
-function parseScratchProject(path) {
-    const rawData = fs.readFileSync(path)
+function parseScratchProject(rawData) {
     const scratchProject = JSON.parse(rawData)
 
     const targets = scratchProject.targets.filter(
@@ -10,11 +7,9 @@ function parseScratchProject(path) {
     let blocks = {}
     if (targets.length > 0) blocks = targets[0].blocks
 
-    return blocks
-}
+    const pseudoCode = convertBlocksToPseudoCode(blocks)
 
-function writePseudoCodeToFile(pseudoCode, path) {
-    fs.writeFileSync(path, pseudoCode)
+    return pseudoCode
 }
 
 function isControlBlock(block) {
@@ -235,23 +230,11 @@ function convertBlocksToPseudoCode(blocks) {
     for (const [key, value] of Object.entries(blocks))
         if (value.parent === null) roots[key] = value
 
-    pseudoCode = { code: '' }
+    const pseudoCode = { code: '' }
     for (const subRoot of Object.keys(roots))
         convertBlocksSubtree(subRoot, pseudoCode, /*indentLevel=*/ 0, blocks)
 
     return pseudoCode.code
 }
 
-function main() {
-    const scratchProjectPath = process.argv[2]
-    const blocks = parseScratchProject(scratchProjectPath)
-
-    const pseudoCode = convertBlocksToPseudoCode(blocks)
-
-    console.log(pseudoCode)
-
-    if (process.argv.length > 3)
-        writePseudoCodeToFile(pseudoCode, process.argv[3])
-}
-
-main()
+export default parseScratchProject
