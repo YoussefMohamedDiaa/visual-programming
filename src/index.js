@@ -132,6 +132,7 @@ function updateEventCode(code) {
             eventCode[eventType] = codeBlocks.join('\n')
         }
     }
+    console.log(eventCode)
 }
 
 function getEventType(eventLine) {
@@ -157,7 +158,8 @@ function getEventType(eventLine) {
 function initListeners() {
     const goButton = document.getElementById('go-btn')
     goButton.onclick = () => {
-        execute(eventCode['greenFlag'], catSprite, dialogController)
+        if (eventCode['greenFlag'])
+            execute(eventCode['greenFlag'], catSprite, dialogController)
     }
 
     document.addEventListener('keydown', ({ key }) => {
