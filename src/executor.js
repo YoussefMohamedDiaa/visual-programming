@@ -5,15 +5,36 @@ function execute(code, cat, dialogController) {
     const codeLines = getCodeLines(code)
     console.log(codeLines)
     console.log("#############")
-    const line = getLineNumber(codeLines,0)
-    console.log(getBlockType(line))
+    //const line = getLineNumber(codeLines,0)
+    //console.log(getBlockType(line))
     //executeLooksCommand(line,dialogController)
     //executeMotionCommand(line, cat)
-
-    //cat.x+=10
-    //cat.y-=10
+    executeSequenceOfCommands(codeLines,cat, dialogController)
+    
 }
 
+async function executeSequenceOfCommands(codeLines, cat, dialogController){
+    for (var i = 0; i < codeLines.length; i++) {
+        //added 1 sec delay for visability
+        await sleep(1)
+        const currentCommand = getLineNumber(codeLines,i)
+        console.log(currentCommand)
+        const currentCommandType = getBlockType(currentCommand)
+        switch(currentCommandType){
+          case "Motion":
+              executeMotionCommand(currentCommand, cat)
+              break;
+          case "Looks":
+              executeLooksCommand(currentCommand,dialogController)
+              break;
+          case "Control":
+              console.log("control")
+              break;    
+          default:
+                break;    
+        }
+      }
+}
 
 function getBlockType(command){
     if(command[0]=="Move"|command[0]=="Turn"|command[0]=="Go"|command[0]=="Change"|command[0]=="Set")
