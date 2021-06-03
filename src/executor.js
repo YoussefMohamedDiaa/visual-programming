@@ -5,6 +5,7 @@ function execute(code, catSp, dialogController) {
     //console.log(code)
     //console.log("#############")
     const codeLines = getCodeLines(code)
+    //console.log(evaluateUnitCondition(["(x=50)"]))
     //console.log(codeLines)
     //console.log("#############")
     //const line = getLineNumber(codeLines,0)
@@ -94,7 +95,10 @@ async function executeControlCommands(codeLines, dialogController){
             await sleep(parseInt(firstCommand[1]));
         }
       break;          
-    default:
+    case "IF":
+       console.log(firstCommand)
+       break;   
+    default:         
       break;  
     }
 }
@@ -150,6 +154,41 @@ function executeMotionCommand(command){
       }
 }
 
+function evaluateUnitCondition(condition){
+   const pureCondition = condition[0].substring(1, condition[0].length-1)
+   var operator = ""
+   if(pureCondition.includes("<")){
+    operator="<"
+   }else if(pureCondition.includes(">")){
+    operator=">"
+   }else if (pureCondition.includes("=")){
+    operator="="
+   }
+    var leftHand;
+    var rightHand;
+    if(pureCondition.split(operator)[0]=="x"){
+        leftHand = cat.x
+        rightHand = parseInt(pureCondition.split(operator)[1]) 
+    }else if(pureCondition.split(operator)[0]=="y") {
+        leftHand = cat.y
+        rightHand = parseInt(pureCondition.split(operator)[1])  
+    }else if(pureCondition.split(operator)[1]=="x"){
+        leftHand = parseInt(pureCondition.split(operator)[0]) 
+        rightHand = cat.x
+    }else if(pureCondition.split(operator)[1]=="y"){
+        leftHand = parseInt(pureCondition.split(operator)[0]) 
+        rightHand = cat.y
+    }
+
+    if(pureCondition.includes("<")){
+        return leftHand < rightHand
+    }else if(pureCondition.includes(">")){
+        return leftHand > rightHand
+    }else if (pureCondition.includes("=")){
+        return leftHand == rightHand
+    }
+
+}
 
 function sleep(s) {
     let ms = s*1000
