@@ -214,7 +214,8 @@ function executeMotionCommand(command) {
             cat.x += parseInt(command[1])
             break
         case 'Turn':
-            if (command[1] === 'right') cat.rotation += parseInt(command[2])
+            if (command[1] === 'right')
+                cat.rotation += (parseInt(command[2]) / 360) * 2 * Math.PI
             else cat.rotation -= parseInt(command[2])
             break
         case 'Change':
