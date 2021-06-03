@@ -6,11 +6,24 @@ function execute(code, cat, dialogController) {
     console.log(codeLines)
     console.log("#############")
     const line = getLineNumber(codeLines,0)
+    console.log(getBlockType(line))
     //executeLooksCommand(line,dialogController)
     //executeMotionCommand(line, cat)
 
     //cat.x+=10
     //cat.y-=10
+}
+
+
+function getBlockType(command){
+    if(command[0]=="Move"|command[0]=="Turn"|command[0]=="Go"|command[0]=="Change"|command[0]=="Set")
+       return "Motion"
+    else if(command[0]=="Say"|command[0]=="Think")
+       return "Looks"
+    else
+        return "Control"   
+    
+       
 }
 
 async function executeLooksCommand(command, dialogController){
