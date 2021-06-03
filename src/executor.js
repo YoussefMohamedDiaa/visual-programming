@@ -104,6 +104,15 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
     switch (firstCommand[0]) {
         case 'REPEAT':
             if (firstCommand[1] === 'UNTIL') {
+                var condition = firstCommand
+                    .slice(2, firstCommand.length)
+                    .join(' ')
+                while (!evaluateCondition(condition)) {
+                    await executeSequenceOfCommands(
+                        codeLines.slice(2, codeLines.length - 1),
+                        dialogController
+                    )
+                }
             } else {
                 for (var i = 0; i < parseInt(firstCommand[1]); i++) {
                     await executeSequenceOfCommands(
