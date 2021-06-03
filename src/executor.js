@@ -5,6 +5,8 @@ function execute(code, catSp, dialogController) {
     //console.log(code)
     //console.log("#############")
     const codeLines = getCodeLines(code)
+    //console.log(eval('(!(!(2<3)) && (2==2)) && (4<6 && ((3<1)||(1<3)))'));
+    //console.log(eval('2>3'));
     //console.log(evaluateUnitCondition(["(x=50)"]))
     //console.log(codeLines)
     //console.log("#############")
@@ -96,11 +98,22 @@ async function executeControlCommands(codeLines, dialogController){
         }
       break;          
     case "IF":
-       console.log(firstCommand)
+       var condition = firstCommand.slice(1, firstCommand.length).join(" ")
+       if(evaluateCondition(condition))
+          await executeSequenceOfCommands(codeLines.slice(2, codeLines.length-1), dialogController)
        break;   
     default:         
       break;  
     }
+}
+
+function evaluateCondition(condition){
+    condition = condition.replace("x", cat.x+"")
+    condition = condition.replace("y", cat.y+"")
+    condition = condition.replace("AND", "&&")
+    condition = condition.replace("OR", "||")
+    condition = condition.replace("NOT", "!")
+    return eval(condition)
 }
 
 async function executeLooksCommand(command, dialogController){
