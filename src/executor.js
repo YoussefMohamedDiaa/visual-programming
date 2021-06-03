@@ -1,10 +1,10 @@
 function execute(code, cat, dialogController) {
-    console.log('Executing:')
-    console.log(code)
-    console.log("#############")
+    //console.log('Executing:')
+    //console.log(code)
+    //console.log("#############")
     const codeLines = getCodeLines(code)
-    console.log(codeLines)
-    console.log("#############")
+    //console.log(codeLines)
+    //console.log("#############")
     //const line = getLineNumber(codeLines,0)
     //console.log(getBlockType(line))
     //executeLooksCommand(line,dialogController)
@@ -18,7 +18,6 @@ async function executeSequenceOfCommands(codeLines, cat, dialogController){
         //added 1 sec delay for visability
         await sleep(1)
         const currentCommand = getLineNumber(codeLines,i)
-        console.log(currentCommand)
         const currentCommandType = getBlockType(currentCommand)
         switch(currentCommandType){
           case "Motion":
@@ -28,7 +27,10 @@ async function executeSequenceOfCommands(codeLines, cat, dialogController){
               executeLooksCommand(currentCommand,dialogController)
               break;
           case "Control":
-              console.log("control")
+              var startOfControl=i
+              var endOfControl = getEndOfControlBlock(codeLines,i)
+              i = endOfControl-1
+              executeControlCommands(codeLines.slice(startOfControl, endOfControl))
               break;    
           default:
                 break;    
@@ -45,6 +47,26 @@ function getBlockType(command){
         return "Control"   
     
        
+}
+
+function getEndOfControlBlock(codeLines,idx){
+    var beginCount = 0;
+    for(var i=idx+1;i<codeLines.length;i++){
+        const currentCommand = getLineNumber(codeLines,i)
+        if(i==0 && currentCommand[0]=="WAIT")
+           return i+1
+        if(currentCommand[0]=="END")
+           beginCount--;
+        if(currentCommand[0]=="BEGIN")
+           beginCount++;
+        if(beginCount==0)
+          return i+1      
+    }
+    return -1;
+}
+
+function executeControlCommands(codeLines){
+   console.log(codeLines)
 }
 
 async function executeLooksCommand(command, dialogController){
