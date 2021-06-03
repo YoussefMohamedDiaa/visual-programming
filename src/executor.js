@@ -18,15 +18,15 @@ function execute(code, catSp, dialogController) {
 }
 
 async function executeSequenceOfCommands(codeLines, dialogController) {
-    for (var i = 0; i < codeLines.length; i++) {
+    for (let i = 0; i < codeLines.length; i++) {
         //added 1 sec delay for visability
-        await sleep(1)
         const currentCommand = getLineNumber(codeLines, i)
         const currentCommandType = getBlockType(currentCommand)
         //console.log(currentCommandType)
         //console.log(currentCommand)
         switch (currentCommandType) {
             case 'Motion':
+                await sleep(1)
                 await executeMotionCommand(currentCommand)
                 break
             case 'Looks':
@@ -56,17 +56,29 @@ async function executeSequenceOfCommands(codeLines, dialogController) {
                 }
 
                 //var startOfElseControl = endOfControl
+
                 if (!elseFound) i = endOfControl - 1
                 else i = endOfElseControl - 1
 
-                //   console.log(i)
+                console.log(i)
                 //   console.log(codeLines.slice(startOfControl, endOfControl))
                 //   console.log(elseBlock)
-                await executeControlCommands(
-                    codeLines.slice(startOfControl, endOfControl),
-                    dialogController,
-                    elseBlock
-                )
+                if (currentCommand[0] !== 'WAIT') {
+                    await executeControlCommands(
+                        codeLines.slice(startOfControl, endOfControl),
+                        dialogController,
+                        elseBlock
+                    )
+                } else {
+                    i = endOfControl - 2
+                    console.log(codeLines[i])
+                    await executeControlCommands(
+                        codeLines.slice(startOfControl, endOfControl - 1),
+                        dialogController,
+                        elseBlock
+                    )
+                }
+
                 break
             default:
                 break
@@ -89,9 +101,9 @@ function getBlockType(command) {
 
 function getEndOfControlBlock(codeLines, idx) {
     var beginCount = 0
-    for (var i = idx + 1; i < codeLines.length; i++) {
+    for (let i = idx + 1; i < codeLines.length; i++) {
         const currentCommand = getLineNumber(codeLines, i)
-        if (i === 0 && currentCommand[0] === 'WAIT') return i + 1
+        if (currentCommand[0] === 'WAIT') return i - 1
         if (currentCommand[0] === 'END') beginCount--
         if (currentCommand[0] === 'BEGIN') beginCount++
         if (beginCount === 0) return i + 1
@@ -100,6 +112,7 @@ function getEndOfControlBlock(codeLines, idx) {
 }
 
 async function executeControlCommands(codeLines, dialogController, elseBlock) {
+    console.log(codeLines)
     const firstCommand = getLineNumber(codeLines, 0)
     switch (firstCommand[0]) {
         case 'REPEAT':
@@ -132,6 +145,12 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
             break
         case 'WAIT':
             if (firstCommand[1] === 'UNTIL') {
+                var condition = firstCommand
+                    .slice(2, firstCommand.length)
+                    .join(' ')
+                while (!evaluateCondition(condition)) {
+                    await sleep(1)
+                }
             } else {
                 //this one below specifcally not tested
                 await sleep(parseInt(firstCommand[1]))
