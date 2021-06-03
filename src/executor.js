@@ -1,4 +1,6 @@
-function execute(code, cat, dialogController) {
+let cat = null
+function execute(code, catSp, dialogController) {
+    cat = catSp
     //console.log('Executing:')
     //console.log(code)
     //console.log("#############")
@@ -9,28 +11,30 @@ function execute(code, cat, dialogController) {
     //console.log(getBlockType(line))
     //executeLooksCommand(line,dialogController)
     //executeMotionCommand(line, cat)
-    executeSequenceOfCommands(codeLines,cat, dialogController)
+    executeSequenceOfCommands(codeLines, dialogController)
     
 }
 
-async function executeSequenceOfCommands(codeLines, cat, dialogController){
+async function executeSequenceOfCommands(codeLines, dialogController){
     for (var i = 0; i < codeLines.length; i++) {
         //added 1 sec delay for visability
         await sleep(1)
         const currentCommand = getLineNumber(codeLines,i)
         const currentCommandType = getBlockType(currentCommand)
+        console.log(currentCommandType)
+        console.log(currentCommand)
         switch(currentCommandType){
           case "Motion":
-              executeMotionCommand(currentCommand, cat)
+              await executeMotionCommand(currentCommand)
               break;
           case "Looks":
-              executeLooksCommand(currentCommand,dialogController)
+              await executeLooksCommand(currentCommand,dialogController)
               break;
           case "Control":
               var startOfControl=i
               var endOfControl = getEndOfControlBlock(codeLines,i)
               i = endOfControl-1
-              executeControlCommands(codeLines.slice(startOfControl, endOfControl))
+              await executeControlCommands(codeLines.slice(startOfControl, endOfControl))
               break;    
           default:
                 break;    
@@ -65,8 +69,34 @@ function getEndOfControlBlock(codeLines,idx){
     return -1;
 }
 
-function executeControlCommands(codeLines){
-   console.log(codeLines)
+async function executeControlCommands(codeLines, dialogController){
+   const firstCommand = getLineNumber(codeLines,0)
+   switch(firstCommand[0]) {
+    case "REPEAT":
+      if(firstCommand[1]=="UNTIL"){
+
+      }else{
+        for(var i=0;i<parseInt(firstCommand[1]);i++){
+            await executeSequenceOfCommands(codeLines.slice(2, codeLines.length-1), dialogController)
+        }
+      }
+      break;
+    case "FOREVER":
+       while(true){
+        await executeSequenceOfCommands(codeLines.slice(2, codeLines.length-1), dialogController)
+       }
+       break;
+    case "WAIT":
+        if(firstCommand[1]=="UNTIL"){
+
+        }else{
+            //this one below specifcally not tested
+            await sleep(parseInt(firstCommand[1]));
+        }
+      break;          
+    default:
+      break;  
+    }
 }
 
 async function executeLooksCommand(command, dialogController){
@@ -88,8 +118,7 @@ async function executeLooksCommand(command, dialogController){
    }
 }
 
-function executeMotionCommand(command, cat){
-    
+function executeMotionCommand(command){
     switch(command[0]) {
         case "Move":
           cat.x += parseInt(command[1]);
