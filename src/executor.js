@@ -177,7 +177,10 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
 }
 
 function evaluateCondition(condition) {
-    condition = condition.replace('Direction', cat.rotation + '')
+    condition = condition.replace(
+        'Direction',
+        (cat.rotation * 180) / Math.PI + ''
+    )
     condition = condition.replace('x', cat.x + '')
     condition = condition.replace('y', cat.y + '')
     condition = condition.replace('AND', '&&')
@@ -211,12 +214,14 @@ async function executeLooksCommand(command, dialogController) {
 function executeMotionCommand(command) {
     switch (command[0]) {
         case 'Move':
-            cat.x += parseInt(command[1])
+            //cat.x += parseInt(command[1])
+            cat.x += parseInt(command[1]) * Math.cos(cat.rotation)
+            cat.y += parseInt(command[1]) * Math.sin(cat.rotation)
             break
         case 'Turn':
             if (command[1] === 'right')
                 cat.rotation += (parseInt(command[2]) / 360) * 2 * Math.PI
-            else cat.rotation -= parseInt(command[2])
+            else cat.rotation -= (parseInt(command[2]) / 360) * 2 * Math.PI
             break
         case 'Change':
             if (command[1] === 'X') cat.x += parseInt(command[3])
