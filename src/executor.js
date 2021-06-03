@@ -71,7 +71,7 @@ async function executeSequenceOfCommands(codeLines, dialogController) {
                     )
                 } else {
                     i = endOfControl - 2
-                    console.log(codeLines[i])
+                    //console.log(codeLines[i])
                     await executeControlCommands(
                         codeLines.slice(startOfControl, endOfControl - 1),
                         dialogController,
@@ -112,7 +112,7 @@ function getEndOfControlBlock(codeLines, idx) {
 }
 
 async function executeControlCommands(codeLines, dialogController, elseBlock) {
-    console.log(codeLines)
+    //console.log(codeLines)
     const firstCommand = getLineNumber(codeLines, 0)
     switch (firstCommand[0]) {
         case 'REPEAT':
