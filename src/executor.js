@@ -1,19 +1,8 @@
 let cat = null
 function execute(code, catSp, dialogController) {
     cat = catSp
-    //console.log('Executing:')
-    //console.log(code)
-    //console.log("#############")
     const codeLines = getCodeLines(code)
-    //console.log(eval('(!(!(2<3)) && (2==2)) && (4<6 && ((3<1)||(1<3)))'));
-    //console.log(eval('2>3'));
-    //console.log(evaluateUnitCondition(["(x=50)"]))
-    //console.log(codeLines)
-    //console.log("#############")
-    //const line = getLineNumber(codeLines,0)
-    //console.log(getBlockType(line))
-    //executeLooksCommand(line,dialogController)
-    //executeMotionCommand(line, cat)
+
     executeSequenceOfCommands(codeLines, dialogController)
 }
 
@@ -152,7 +141,6 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
                     await sleep(1)
                 }
             } else {
-                //this one below specifcally not tested
                 await sleep(parseInt(firstCommand[1]))
             }
             break
@@ -237,41 +225,6 @@ function executeMotionCommand(command) {
             break
         default:
             break
-    }
-}
-
-function evaluateUnitCondition(condition) {
-    const pureCondition = condition[0].substring(1, condition[0].length - 1)
-    var operator = ''
-    if (pureCondition.includes('<')) {
-        operator = '<'
-    } else if (pureCondition.includes('>')) {
-        operator = '>'
-    } else if (pureCondition.includes('=')) {
-        operator = '='
-    }
-    var leftHand
-    var rightHand
-    if (pureCondition.split(operator)[0] === 'x') {
-        leftHand = cat.x
-        rightHand = parseInt(pureCondition.split(operator)[1])
-    } else if (pureCondition.split(operator)[0] === 'y') {
-        leftHand = cat.y
-        rightHand = parseInt(pureCondition.split(operator)[1])
-    } else if (pureCondition.split(operator)[1] === 'x') {
-        leftHand = parseInt(pureCondition.split(operator)[0])
-        rightHand = cat.x
-    } else if (pureCondition.split(operator)[1] === 'y') {
-        leftHand = parseInt(pureCondition.split(operator)[0])
-        rightHand = cat.y
-    }
-
-    if (pureCondition.includes('<')) {
-        return leftHand < rightHand
-    } else if (pureCondition.includes('>')) {
-        return leftHand > rightHand
-    } else if (pureCondition.includes('=')) {
-        return leftHand === rightHand
     }
 }
 
