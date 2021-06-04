@@ -191,11 +191,9 @@ async function executeLooksCommand(command, dialogController) {
         dialogController.clear()
     } else {
         if (command[0] === 'Say')
-            dialogController.say(command.slice(1, command.length - 2).join(' '))
+            dialogController.say(command.slice(1, command.length).join(' '))
         if (command[0] === 'Think')
-            dialogController.think(
-                command.slice(1, command.length - 2).join(' ')
-            )
+            dialogController.think(command.slice(1, command.length).join(' '))
     }
 }
 

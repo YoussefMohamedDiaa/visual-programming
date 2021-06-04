@@ -71,7 +71,7 @@ function convertBlockCommand(blockId, blocks) {
             return (
                 'Think ' +
                 block.inputs.MESSAGE[1][1] +
-                'For ' +
+                ' For ' +
                 block.inputs.SECS[1][1]
             )
         case 'event_whenkeypressed':
