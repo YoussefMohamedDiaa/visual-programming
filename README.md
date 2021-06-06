@@ -13,26 +13,22 @@ npm install
 ```
 
 ## Running the program
-```
-npm start <pathToScratchProjectJSON>
-```
-The transformed pseudo code will be displayed in the console.
 
-### Writing the pseudo code to file
-To write the pseudo code to a file, an optional file path can be passed as a command line argument.
+Run on http://localhost:3000:
 ```
-npm start <pathToScratchProjectJSON> <optionalOutputPath>
+npm start
 ```
+Upload a Scratch Project JSON to transform it into pseudo code and execute it. The transformed pseudo code will be displayed in the console.
+
+*Note: When uploading another Scratch Project JSON a page refresh might be needed.*
+
 ## Examples
 
 The following are sample projects, that can be found under the `./scratch-projects` directory.
 
 ### Sample Scratch Program
 
-To generate the textual representation of the sample scratch program, change the directory to the root of this project then run the following command:
-```
-npm start ./scratch-projects/sample-program.json
-```
+An example Scratch program is provided at `./scratch-projects/sample-program.json`.
 
 #### Scratch Program
 ![Sample Scratch Program](./scratch-projects/images/sample-project.png)
@@ -65,23 +61,4 @@ WHEN i PRESSED
         Turn right 90 Degrees
       END
   END
-```
-
-## Running
-
-Run on http://localhost:3000:
-```
-npm start
-```
-
-## Building
-
-Development build:
-```
-npm run build
-```
-
-Production build:
-```
-npm run production
 ```
