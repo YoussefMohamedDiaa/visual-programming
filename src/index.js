@@ -43,6 +43,31 @@ app.loader.load(() => {
     initScene()
 })
 
+
+// Dialog Controller
+
+const dialogController = {
+    _editDialogText: function (verb, text) {
+        const dialogElement = document.getElementById('dialog')
+        dialogElement.innerHTML = `
+        <div id="dialogCard" class="card">
+            <div id="dialogContent" class="card-body">
+                <strong>Scratch ${verb}: </strong>${text}
+            </div>
+        </div>`
+    },
+    say: function (text) {
+        this._editDialogText('saying', text)
+    },
+    think: function (text) {
+        this._editDialogText('thinking', text)
+    },
+    clear: function () {
+        document.getElementById('dialog').innerHTML = ''
+    }
+}
+
+
 // JSON Upload
 
 const inputElement = document.getElementById('scratchCodeInput')
@@ -58,6 +83,7 @@ function handleFiles() {
 
 function onReaderLoad(event) {
     initScene()
+    dialogController.clear()
     alertJSONUploadSuccess()
     const plainTextData = event.target.result
     const code = parseScratchProject(plainTextData)
@@ -88,28 +114,7 @@ function resize() {
 
 resize()
 
-// Dialog Controller
-
-const dialogController = {
-    _editDialogText: function (verb, text) {
-        const dialogElement = document.getElementById('dialog')
-        dialogElement.innerHTML = `
-        <div id="dialogCard" class="card">
-            <div id="dialogContent" class="card-body">
-                <strong>Scratch ${verb}: </strong>${text}
-            </div>
-        </div>`
-    },
-    say: function (text) {
-        this._editDialogText('saying', text)
-    },
-    think: function (text) {
-        this._editDialogText('thinking', text)
-    },
-    clear: function () {
-        document.getElementById('dialog').innerHTML = ''
-    }
-}
+// Event Handling
 
 let eventCode = {}
 

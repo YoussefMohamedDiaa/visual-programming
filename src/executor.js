@@ -1,18 +1,15 @@
 let cat = null
-function execute(code, catSp, dialogController) {
-    cat = catSp
-    const codeLines = getCodeLines(code)
 
+function execute(code, catSprite, dialogController) {
+    cat = catSprite
+    const codeLines = getCodeLines(code)
     executeSequenceOfCommands(codeLines, dialogController)
 }
 
 async function executeSequenceOfCommands(codeLines, dialogController) {
     for (let i = 0; i < codeLines.length; i++) {
-        //added 1 sec delay for visability
-        const currentCommand = getLineNumber(codeLines, i)
+        const currentCommand = getLineAt(codeLines, i)
         const currentCommandType = getBlockType(currentCommand)
-        //console.log(currentCommandType)
-        //console.log(currentCommand)
         switch (currentCommandType) {
             case 'Motion':
                 await executeMotionCommand(currentCommand)
@@ -20,16 +17,19 @@ async function executeSequenceOfCommands(codeLines, dialogController) {
             case 'Looks':
                 await executeLooksCommand(currentCommand, dialogController)
                 break
+            case 'Wait':
+                await executeWaitCommand(currentCommand)
+                break
             case 'Control':
-                var startOfControl = i
-                var endOfControl = getEndOfControlBlock(codeLines, i)
+                let startOfControl = i
+                let endOfControl = getEndOfControlBlock(codeLines, i)
 
-                var elseBlock = []
-                var endOfElseControl = -1
-                var elseFound = false
-                if (codeLines.length > endOfControl) {
-                    const nextCommand = getLineNumber(codeLines, endOfControl)
-                    if (nextCommand[0] == 'ELSE') {
+                let elseBlock = []
+                let endOfElseControl = -1
+                let elseFound = false
+                if (endOfControl < codeLines.length) {
+                    const nextCommand = getLineAt(codeLines, endOfControl)
+                    if (nextCommand[0] === 'ELSE') {
                         endOfElseControl = getEndOfControlBlock(
                             codeLines,
                             endOfControl
@@ -38,38 +38,18 @@ async function executeSequenceOfCommands(codeLines, dialogController) {
                             endOfControl,
                             endOfElseControl
                         )
-                        console.log(elseBlock)
                         elseFound = true
                     }
                 }
 
-                //var startOfElseControl = endOfControl
-
                 if (!elseFound) i = endOfControl - 1
                 else i = endOfElseControl - 1
 
-                console.log(i)
-                //   console.log(codeLines.slice(startOfControl, endOfControl))
-                //   console.log(elseBlock)
-                if (currentCommand[0] !== 'WAIT') {
-                    await executeControlCommands(
-                        codeLines.slice(startOfControl, endOfControl),
-                        dialogController,
-                        elseBlock
-                    )
-                } else {
-                    i = endOfControl - 2
-                    //console.log(codeLines[i])
-                    await executeControlCommands(
-                        codeLines.slice(startOfControl, endOfControl - 1),
-                        dialogController,
-                        elseBlock
-                    )
-                }
-
-                break
-            default:
-                break
+                await executeControlCommands(
+                    codeLines.slice(startOfControl, endOfControl),
+                    dialogController,
+                    elseBlock
+                )
         }
     }
 }
@@ -81,44 +61,57 @@ function getBlockType(command) {
         (command[0] === 'Go') |
         (command[0] === 'Change') |
         (command[0] === 'Set')
-    )
+    ) {
         return 'Motion'
-    else if ((command[0] === 'Say') | (command[0] === 'Think')) return 'Looks'
-    else return 'Control'
+    } else if ((command[0] === 'Say') | (command[0] === 'Think')) {
+        return 'Looks'
+    } else if (command[0] === 'WAIT') {
+        return 'Wait'
+    } else {
+        return 'Control'
+    }
 }
 
 function getEndOfControlBlock(codeLines, idx) {
-    var beginCount = 0
+    let beginCount = 0
     for (let i = idx + 1; i < codeLines.length; i++) {
-        const currentCommand = getLineNumber(codeLines, i)
-        if (currentCommand[0] === 'WAIT') return i - 1
-        if (currentCommand[0] === 'END') beginCount--
+        const currentCommand = getLineAt(codeLines, i)
         if (currentCommand[0] === 'BEGIN') beginCount++
+        if (currentCommand[0] === 'END') beginCount--
         if (beginCount === 0) return i + 1
     }
     return -1
 }
 
+async function executeWaitCommand(command) {
+    if (command[1] === 'UNTIL') {
+        let condition = command.slice(2).join(' ')
+        while (!evaluateCondition(condition)) await sleep(0.01)
+    } else {
+        await sleep(parseInt(command[1]))
+    }
+}
+
 async function executeControlCommands(codeLines, dialogController, elseBlock) {
-    //console.log(codeLines)
-    const firstCommand = getLineNumber(codeLines, 0)
+    const firstCommand = getLineAt(codeLines, 0)
+    const insideBlocks = codeLines.slice(2, codeLines.length - 1)
     switch (firstCommand[0]) {
         case 'REPEAT':
             if (firstCommand[1] === 'UNTIL') {
-                var condition = firstCommand
+                let condition = firstCommand
                     .slice(2, firstCommand.length)
                     .join(' ')
                 while (!evaluateCondition(condition)) {
                     await executeSequenceOfCommands(
-                        codeLines.slice(2, codeLines.length - 1),
+                        insideBlocks,
                         dialogController
                     )
                     sleep(0.01)
                 }
             } else {
-                for (var i = 0; i < parseInt(firstCommand[1]); i++) {
+                for (let i = 0; i < parseInt(firstCommand[1]); i++) {
                     await executeSequenceOfCommands(
-                        codeLines.slice(2, codeLines.length - 1),
+                        insideBlocks,
                         dialogController
                     )
                     sleep(0.01)
@@ -127,41 +120,19 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
             break
         case 'FOREVER':
             while (true) {
-                await executeSequenceOfCommands(
-                    codeLines.slice(2, codeLines.length - 1),
-                    dialogController
-                )
+                await executeSequenceOfCommands(insideBlocks, dialogController)
                 sleep(0.01)
             }
-        case 'WAIT':
-            if (firstCommand[1] === 'UNTIL') {
-                var condition = firstCommand
-                    .slice(2, firstCommand.length)
-                    .join(' ')
-                while (!evaluateCondition(condition)) {
-                    await sleep(0.01)
-                }
-            } else {
-                await sleep(parseInt(firstCommand[1]))
-            }
-            break
         case 'IF':
-            var condition = firstCommand.slice(1, firstCommand.length).join(' ')
+            let condition = firstCommand.slice(1, firstCommand.length).join(' ')
             if (evaluateCondition(condition))
-                await executeSequenceOfCommands(
-                    codeLines.slice(2, codeLines.length - 1),
-                    dialogController
-                )
+                await executeSequenceOfCommands(insideBlocks, dialogController)
             else if (elseBlock.length > 0) {
                 await executeSequenceOfCommands(
                     elseBlock.slice(2, elseBlock.length - 1),
                     dialogController
                 )
             }
-
-            break
-        default:
-            break
     }
 }
 
@@ -180,7 +151,6 @@ function evaluateCondition(condition) {
 
 async function executeLooksCommand(command, dialogController) {
     if (command[command.length - 2] === 'For') {
-        //times looks command
         if (command[0] === 'Say')
             dialogController.say(command.slice(1, command.length - 2).join(' '))
         if (command[0] === 'Think')
@@ -201,14 +171,13 @@ async function executeLooksCommand(command, dialogController) {
 function executeMotionCommand(command) {
     switch (command[0]) {
         case 'Move':
-            //cat.x += parseInt(command[1])
             cat.x += parseInt(command[1]) * Math.cos(cat.rotation)
             cat.y += parseInt(command[1]) * Math.sin(cat.rotation)
             break
         case 'Turn':
             if (command[1] === 'right')
-                cat.rotation += (parseInt(command[2]) / 360) * 2 * Math.PI
-            else cat.rotation -= (parseInt(command[2]) / 360) * 2 * Math.PI
+                cat.rotation += (parseInt(command[2]) / 180) * Math.PI
+            else cat.rotation -= (parseInt(command[2]) / 180) * Math.PI
             break
         case 'Change':
             if (command[1] === 'X') cat.x += parseInt(command[3])
@@ -221,9 +190,6 @@ function executeMotionCommand(command) {
         case 'Go':
             cat.x = parseInt(command[2].split(',')[0])
             cat.y = parseInt(command[2].split(',')[1])
-            break
-        default:
-            break
     }
 }
 
@@ -237,7 +203,7 @@ function getCodeLines(code) {
     return codeLines
 }
 
-function getLineNumber(codeLines, idx) {
+function getLineAt(codeLines, idx) {
     return codeLines[idx].trim().split(' ')
 }
 
