@@ -15,7 +15,6 @@ async function executeSequenceOfCommands(codeLines, dialogController) {
         //console.log(currentCommand)
         switch (currentCommandType) {
             case 'Motion':
-                await sleep(1)
                 await executeMotionCommand(currentCommand)
                 break
             case 'Looks':
@@ -114,6 +113,7 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
                         codeLines.slice(2, codeLines.length - 1),
                         dialogController
                     )
+                    sleep(0.01)
                 }
             } else {
                 for (var i = 0; i < parseInt(firstCommand[1]); i++) {
@@ -121,6 +121,7 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
                         codeLines.slice(2, codeLines.length - 1),
                         dialogController
                     )
+                    sleep(0.01)
                 }
             }
             break
@@ -130,15 +131,15 @@ async function executeControlCommands(codeLines, dialogController, elseBlock) {
                     codeLines.slice(2, codeLines.length - 1),
                     dialogController
                 )
+                sleep(0.01)
             }
-            break
         case 'WAIT':
             if (firstCommand[1] === 'UNTIL') {
                 var condition = firstCommand
                     .slice(2, firstCommand.length)
                     .join(' ')
                 while (!evaluateCondition(condition)) {
-                    await sleep(1)
+                    await sleep(0.01)
                 }
             } else {
                 await sleep(parseInt(firstCommand[1]))
